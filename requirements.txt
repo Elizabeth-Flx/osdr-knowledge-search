@@ -1,0 +1,9 @@
+shiny
+requests
+pandas
+pyarrow
+matplotlib
+sentence-transformers
+faiss-cpu
+rank_bm25
+jupyter
