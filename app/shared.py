@@ -58,6 +58,15 @@ def search(query, filters=None, k=100):
     best = hits.sort_values("score", ascending=False).drop_duplicates("Accession").head(k)
 
     results = best.merge(studies, on="Accession")
-    results["organism"] = results["organism_list"].map(", ".join)
     results["score"] = results["score"].round(3)
-    return results[["Accession", "Study Title", "Study Description", "organism", "project_type", "score"]]
+
+    # list columns -> text for showing in the app
+    LIST_COLUMNS = {"organism_list": "organism", "material_types": "material", "assay_technology": "assay",
+                    "factors": "factors", "missions": "missions", "space_agencies": "space agency",
+                    "flight_platforms": "flight platform"}
+    for column, name in LIST_COLUMNS.items():
+        results[name] = results[column].map(lambda v: ", ".join(as_list(v)))
+    results["release date"] = results["release_date"].dt.date
+
+    return results[["Accession", "Study Title", "organism", "project_type", "score",
+                    "Study Description", *[n for n in LIST_COLUMNS.values() if n != "organism"], "release date"]]
