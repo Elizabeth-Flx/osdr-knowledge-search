@@ -18,8 +18,8 @@ def list_str(v):
 
 # the model only reads 256 tokens, most descriptions are longer
 # -> split the description into chunks, every chunk gets the title + header in front
-CHUNK_WORDS = 100   # ~150 tokens, leaves room for title + header
-OVERLAP = 20        # words shared between chunks so sentences aren't cut in half
+CHUNK_WORDS = 128   # ~150 tokens, leaves room for title + header
+OVERLAP = 16        # words shared between chunks so sentences aren't cut in half
 
 def build_header(r):
     return "; ".join(f"{label}: {val}" for label, val in [
