@@ -22,6 +22,8 @@ DETAIL_FIELDS = {
 app_ui = ui.page_sidebar(
     ui.sidebar(*filter_inputs, title="Filters"),
     ui.input_text("query", "Search", placeholder="e.g. muscle atrophy in mice", width="100%"),
+    ui.input_radio_buttons("mode", None, {"hybrid": "Hybrid", "semantic": "Semantic", "keyword": "Keyword"},
+                           inline=True),
     ui.input_action_button("go", "Search"),
     ui.layout_columns(
         ui.output_data_frame("results"),
@@ -33,12 +35,12 @@ app_ui = ui.page_sidebar(
 
 
 def server(input, output, session):
-    # run the search once per click, the table and the details panel both use it
+    # run the search once per click (or when the mode changes), the table and the details panel both use it
     @reactive.calc
-    @reactive.event(input.go)
+    @reactive.event(input.go, input.mode)
     def found():
         filters = {column: input[fid]() for fid, (label, column) in FILTERS.items()}
-        return search(input.query(), filters)
+        return search(input.query(), filters, mode=input.mode())
 
     @render.data_frame
     def results():
