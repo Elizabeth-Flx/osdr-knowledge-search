@@ -76,7 +76,7 @@ def hybrid_scores(query, k=60):
 SCORERS = {"semantic": semantic_scores, "keyword": bm25_scores, "hybrid": hybrid_scores}
 
 
-def search(query, filters=None, mode="hybrid", k=100):
+def search(query, filters=None, mode="hybrid", k=None):
     # studies that pass all filters (no selection = no filter)
     keep = pd.Series(True, index=studies.index)
     for column, selected in (filters or {}).items():

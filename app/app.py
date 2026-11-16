@@ -9,6 +9,8 @@ filter_inputs = [
     for fid, (label, column) in FILTERS.items()
 ]
 
+PAGE_SIZE = 25  # results per page
+
 # columns shown in the table, everything else is only in the details panel
 TABLE_COLUMNS = ["Accession", "Study Title", "organism", "project_type", "score"]
 
@@ -26,7 +28,16 @@ app_ui = ui.page_sidebar(
                            inline=True),
     ui.input_action_button("go", "Search"),
     ui.layout_columns(
-        ui.output_data_frame("results"),
+        ui.div(
+            ui.output_data_frame("results"),
+            # page buttons under the table
+            ui.div(
+                ui.input_action_button("prev", f"← Previous {PAGE_SIZE}"),
+                ui.output_text("page_info", inline=True),
+                ui.input_action_button("next", f"Next {PAGE_SIZE} →"),
+                class_="d-flex gap-3 align-items-center mt-2",
+            ),
+        ),
         ui.output_ui("details"),
         col_widths=[7, 5],  # table left, details right
     ),
@@ -42,10 +53,40 @@ def server(input, output, session):
         filters = {column: input[fid]() for fid, (label, column) in FILTERS.items()}
         return search(input.query(), filters, mode=input.mode())
 
+    # current page, starts at 0 and goes back to 0 for every new search
+    page = reactive.value(0)
+
+    @reactive.effect
+    @reactive.event(found)
+    def _():
+        page.set(0)
+
+    def last_page():
+        return max((len(found()) - 1) // PAGE_SIZE, 0)
+
+    @reactive.effect
+    @reactive.event(input.next)
+    def _():
+        page.set(min(page() + 1, last_page()))
+
+    @reactive.effect
+    @reactive.event(input.prev)
+    def _():
+        page.set(max(page() - 1, 0))
+
+    @render.text
+    def page_info():
+        n = len(found())
+        if n == 0:
+            return "no results"
+        start = page() * PAGE_SIZE
+        return f"{start + 1}–{min(start + PAGE_SIZE, n)} of {n}"
+
     @render.data_frame
     def results():
+        start = page() * PAGE_SIZE
         return render.DataGrid(
-            found()[TABLE_COLUMNS],
+            found()[TABLE_COLUMNS].iloc[start:start + PAGE_SIZE],
             width="100%",  # use the full page width
             height="70vh",
             selection_mode="row",  # click a row to select it
