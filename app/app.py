@@ -88,7 +88,7 @@ def server(input, output, session):
         return render.DataGrid(
             found()[TABLE_COLUMNS].iloc[start:start + PAGE_SIZE],
             width="100%",  # use the full page width
-            height="70vh",
+            height="calc(70vh - 3.5rem)",  # leaves room for the page buttons, together as tall as the details panel
             selection_mode="row",  # click a row to select it
             styles=[
                 {"cols": [0], "style": {"min-width": "90px"}},                         # Accession
