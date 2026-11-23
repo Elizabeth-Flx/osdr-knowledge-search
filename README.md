@@ -63,14 +63,14 @@ Filters are applied before ranking, so a narrow filter still returns all matchin
 
 Summary of [reports/readiness_scorecard.md](reports/readiness_scorecard.md):
 
-| Dimension | Rating |
+| | Rating |
 |---|---|
-| Completeness | 🟡 |
-| Consistency | 🔴 |
-| Validity | 🟡 |
-| Structure | 🔴 |
-| Uniqueness | 🟡 |
-| Text quality | 🟢 |
+| Completeness | ok |
+| Consistency | bad |
+| Validity | ok |
+| Structure | bad |
+| Uniqueness | ok |
+| Text quality | good |
 
 The titles and descriptions are ready for semantic search as they are (median description length: 192 words). The structured fields need harmonisation before they can be used as filters, and are not ready for ML on structured labels without further cleaning. The main fix on the data side would be controlled vocabularies and real list fields at submission time.
 
